@@ -1,0 +1,10 @@
+{
+  "name": "Carl",
+  "version": "0.0.1",
+  "description": "Carl's cool!",
+  "main": "bot.js",
+  "author": "Melonai",
+  "dependencies": {
+    "discord.js": "^12.0.2"
+  }
+}
