@@ -6,5 +6,5 @@ module.exports = {
 };
 
 function main(message, args) {
-    message.channel.send('Goodbye... :C').then(message.client.destroy());
+    message.channel.send('Goodbye... :C').then(() => message.client.destroy());
 }

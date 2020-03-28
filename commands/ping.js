@@ -6,5 +6,5 @@ module.exports = {
 };
 
 function main(message, args) {
-    message.channel.send('Ping.');
+    message.channel.send('Pong.');
 }

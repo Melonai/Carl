@@ -7,8 +7,18 @@ module.exports = {
     execute: main
 };
 
+const pageSize = 10;
+
 function main(message, args) {
-    const embed = new Discord.MessageEmbed().setTitle("List of commands:");
+    const pageNumber = (typeof args[0] === 'undefined') ? 1 : parseInt(args[0]);
+    const pageAmount = Math.ceil(message.client.commands.length / pageSize);
+
+    const embed = new Discord.MessageEmbed().setTitle('List of commands:');
+
+    let commandPage = message.client.commands.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+    commandPage.map(c => embed.addField(c.name, c.description));
+
+    embed.setFooter(`Page ${pageNumber} out of ${pageAmount}`);
 
     message.channel.send(embed);
 }

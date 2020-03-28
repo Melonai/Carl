@@ -21,25 +21,41 @@ const logger = winston.createLogger({
 
 const bot = new Discord.Client();
 
-bot.commands = new Discord.Collection();
+bot.logger = logger;
+
+bot.config = config;
 
 bot.addCommand = path => {
-    const command = require('./commands/' + path)
+    const command = require('./commands/' + path);
     command.handles.forEach(handle => {
-        bot.commands.set(handle, command);
+        bot.handles.set(handle, command);
     });
+
+    for (let i = 0; i < bot.commands.length+1; i++) {
+        if (i === bot.commands.length) {
+            bot.commands.push(command);
+            break;
+        } else if (bot.commands[i].name > command.name) {
+            bot.commands.splice(i, 0, command);
+            break;
+        }
+    }
 };
 
-fs.readdirSync('./commands').forEach(file => {
-    if (file.endsWith('.js')) {
-        bot.addCommand(file);
-    }
-});
-
-bot.login(auth.token).then( () => {
-    logger.info('Logged in as: ');
-    logger.info(bot.user.username + ' - (' + bot.user.id + ')');
-});
+bot.loadCommands = () => {
+    bot.handles = new Discord.Collection();
+    bot.commands = [];
+    fs.readdirSync('./commands').forEach(file => {
+        if (file.endsWith('.js')) {
+            const fullPath = __dirname + '/commands/' + file;
+            if (typeof require.cache[fullPath] !== 'undefined') {
+                delete require.cache[fullPath];
+            }
+            bot.addCommand(file);
+        }
+    });
+    logger.info(`${bot.commands.length} commands loaded!`);
+};
 
 bot.once('ready', () => {
     logger.info('Ready!');
@@ -57,9 +73,17 @@ bot.on('message', message => {
 function command(message, content) {
     const args = content.split(' ');
     const cmd = args.shift().toLowerCase();
-    const command = bot.commands.get(cmd);
-    if (command != undefined) {
+    const command = bot.handles.get(cmd);
+    if (typeof command !== 'undefined') {
         command.execute(message, args);
-        logger.info(cmd + " executed successfully.");
+        logger.info(`${cmd} executed successfully.`);
     }
 }
+
+
+bot.loadCommands();
+
+bot.login(auth.token).then( () => {
+    logger.info('Logged in as: ');
+    logger.info(bot.user.username + ' - (' + bot.user.id + ')');
+});
