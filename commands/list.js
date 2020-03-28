@@ -1,9 +1,11 @@
 const Discord = require('discord.js');
+const Verification = require('../verification.js');
 
 module.exports = {
     name: 'List',
     description: 'This will list all commands available to me.',
     handles: ['list'],
+    verify: Verification.everyone,
     execute: main
 };
 

@@ -1,7 +1,10 @@
+const Verification = require('../verification.js');
+
 module.exports = {
     name: 'Generate',
     description: 'I\'ll give you a number between the two numbers you picked.',
     handles: ['generate'],
+    verify: Verification.everyone,
     execute: main
 };
 

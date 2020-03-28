@@ -75,8 +75,14 @@ function command(message, content) {
     const cmd = args.shift().toLowerCase();
     const command = bot.handles.get(cmd);
     if (typeof command !== 'undefined') {
-        command.execute(message, args);
-        logger.info(`${cmd} executed successfully.`);
+        if (command.verify(message.member)) {
+            command.execute(message, args);
+            logger.info(`${message.author.name} successfully executed "${cmd}".`);
+        } else {
+            logger.warn(`${message.author.name} does not have the permission to execute "${cmd}".`);
+        }
+    } else {
+        logger.warn(`${message.author.name} tried to issue non-existing command "${cmd}".`)
     }
 }
 
