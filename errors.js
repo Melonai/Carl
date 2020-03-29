@@ -11,7 +11,7 @@ const defaultColor = '#ff1996';
 
 function makePermissionError(command) {
     const description = `You do not have enough permissions to use "${command.name}".
-        To use this command you need at least a permission level of "${command.verify.name.toUpperCase()}"`;
+        To use this command you need at least a permission level of "${command.verify.name}"`;
 
     return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
 }

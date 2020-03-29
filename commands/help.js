@@ -10,7 +10,14 @@ module.exports = {
 };
 
 async function main(message, args) {
-    const title = message.client.handles.get(args[0]).name;
-    const description = message.client.handles.get(args[0]).description;
-    message.channel.send(new Discord.MessageEmbed().setTitle(title).setDescription(description));
+    const command = message.client.handles.get(args[0]);
+    if (typeof command !== 'undefined') {
+        const embed = new Discord.MessageEmbed();
+        const title = command.name;
+        const description = command.description;
+        embed.setTitle(title).setDescription(description);
+        embed.addField("Usage", "carl " + command.handles[0]);
+        embed.addField("Permission Level", command.verify.name);
+        message.channel.send(embed);
+    }
 }

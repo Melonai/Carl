@@ -78,15 +78,15 @@ function command(message, content) {
     if (typeof command !== 'undefined') {
         if (command.verify(message.member)) {
             command.execute(message, args)
-                .then(() => logger.info(`${message.author.username} successfully executed "${cmd}".`))
-                .catch((r) => {message.channel.send(errors.GENERAL_ERROR(command)); logger.error(r)});
+                .then(() => logger.info(`${message.author.tag} successfully executed "${cmd}".`))
+                .catch((r) => {message.channel.send(errors.GENERAL_ERROR(command))});
         } else {
             message.channel.send(errors.PERMISSION_ERROR(command));
-            logger.warn(`${message.author.username} does not have the permission to execute "${cmd}".`);
+            logger.warn(`${message.author.tag} does not have the permission to execute "${cmd}".`);
         }
     } else {
         message.channel.send(errors.NO_SUCH_COMMAND_ERROR(cmd));
-        logger.warn(`${message.author.username} tried to issue non-existing command "${cmd}".`)
+        logger.warn(`${message.author.tag} tried to issue non-existing command "${cmd}".`)
     }
 }
 
@@ -95,5 +95,5 @@ bot.loadCommands();
 
 bot.login(auth.token).then( () => {
     logger.info('Logged in as: ');
-    logger.info(bot.user.username + ' - (' + bot.user.id + ')');
+    logger.info(bot.user.tag + ' - (' + bot.user.id + ')');
 });
