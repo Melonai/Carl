@@ -8,7 +8,7 @@ module.exports = {
     execute: main
 };
 
-function main(message, args) {
+async function main(message, args) {
     const lowercase_args = args.map(a => a.toLowerCase());
     const low = parseInt(lowercase_args.indexOf('from') + 1);
     const high = parseInt(lowercase_args.indexOf('to') + 1);

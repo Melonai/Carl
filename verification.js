@@ -7,7 +7,7 @@ module.exports = {
 }
 
 function everyone(member) {
-    return !member.user.bot;
+    return !(member.user.bot);
 }
 
 function admin(member) {

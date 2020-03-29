@@ -8,6 +8,6 @@ module.exports = {
     execute: main
 };
 
-function main(message, args) {
+async function main(message, args) {
     message.channel.send('Pong.');
 }

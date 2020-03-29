@@ -11,7 +11,7 @@ module.exports = {
 
 const pageSize = 10;
 
-function main(message, args) {
+async function main(message, args) {
     const pageNumber = (typeof args[0] === 'undefined') ? 1 : parseInt(args[0]);
     const pageAmount = Math.ceil(message.client.commands.length / pageSize);
 

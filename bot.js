@@ -4,6 +4,7 @@ const winston = require('winston');
 
 const auth = require('./auth.json');
 const config = require('./config.json');
+const errors = require('./errors.js');
 
 const logger = winston.createLogger({
     level: 'debug',
@@ -76,13 +77,16 @@ function command(message, content) {
     const command = bot.handles.get(cmd);
     if (typeof command !== 'undefined') {
         if (command.verify(message.member)) {
-            command.execute(message, args);
-            logger.info(`${message.author.name} successfully executed "${cmd}".`);
+            command.execute(message, args)
+                .then(() => logger.info(`${message.author.username} successfully executed "${cmd}".`))
+                .catch((r) => {message.channel.send(errors.GENERAL_ERROR(command)); logger.error(r)});
         } else {
-            logger.warn(`${message.author.name} does not have the permission to execute "${cmd}".`);
+            message.channel.send(errors.PERMISSION_ERROR(command));
+            logger.warn(`${message.author.username} does not have the permission to execute "${cmd}".`);
         }
     } else {
-        logger.warn(`${message.author.name} tried to issue non-existing command "${cmd}".`)
+        message.channel.send(errors.NO_SUCH_COMMAND_ERROR(cmd));
+        logger.warn(`${message.author.username} tried to issue non-existing command "${cmd}".`)
     }
 }
 

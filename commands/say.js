@@ -8,7 +8,7 @@ module.exports = {
     execute: main
 };
 
-function main(message, args) {
+async function main(message, args) {
     message.delete();
     message.channel.send(args.join(" "));
 }

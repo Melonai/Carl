@@ -9,7 +9,7 @@ module.exports = {
     execute: main
 };
 
-function main(message, args) {
+async function main(message, args) {
     const title = message.client.handles.get(args[0]).name;
     const description = message.client.handles.get(args[0]).description;
     message.channel.send(new Discord.MessageEmbed().setTitle(title).setDescription(description));

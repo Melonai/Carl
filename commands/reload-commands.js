@@ -8,7 +8,7 @@ module.exports = {
     execute: main
 };
 
-function main(message, args) {
+async function main(message, args) {
     message.client.loadCommands();
     message.channel.send(`${message.client.commands.length} commands were successfully loaded!`);
 }
