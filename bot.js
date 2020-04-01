@@ -5,14 +5,14 @@ const winston = require('winston');
 const config = require('./config.json');
 const errors = require('./errors.js');
 
-let auth;
+let auth = {};
 
 try {
     if (fs.existsSync('./auth.json')) {
         auth = require('./auth.json');
     }
 } catch (e) {
-    auth = process.env.TOKEN;
+    auth.token = process.env.TOKEN;
 }
 
 const logger = winston.createLogger({
