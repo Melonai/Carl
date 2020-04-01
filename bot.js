@@ -10,9 +10,11 @@ let auth = {};
 try {
     if (fs.existsSync('./auth.json')) {
         auth = require('./auth.json');
+    } else {
+        auth.token = process.env.TOKEN;
     }
 } catch (e) {
-    auth.token = process.env.TOKEN;
+    logger.error(e);
 }
 
 const logger = winston.createLogger({
