@@ -4,6 +4,7 @@ module.exports = {
     name: 'Hello!',
     description: 'Mutual greeting!',
     handles: ['hello', 'hello!', 'hai', 'hi'],
+    args: [],
     verify: Verification.everyone,
     execute: main
 };

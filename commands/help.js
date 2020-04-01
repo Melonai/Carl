@@ -1,10 +1,12 @@
 const Discord = require('discord.js');
 const Verification = require('../verification.js');
+const Arguments = require('../arguments.js');
 
 module.exports = {
     name: 'Help',
     description: 'I\'ll help you with a command!',
     handles: ['help'],
+    args: [Arguments.Any],
     verify: Verification.everyone,
     execute: main
 };

@@ -4,6 +4,7 @@ module.exports = {
     name: 'Die',
     description: 'This kills me...',
     handles: ['die'],
+    args: [],
     verify: Verification.trusted,
     execute: main
 };

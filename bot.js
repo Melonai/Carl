@@ -77,9 +77,16 @@ function command(message, content) {
     const command = bot.handles.get(cmd);
     if (typeof command !== 'undefined') {
         if (command.verify(message.member)) {
-            command.execute(message, args)
-                .then(() => logger.info(`${message.author.tag} successfully executed "${cmd}".`))
-                .catch((r) => {message.channel.send(errors.GENERAL_ERROR(command))});
+            if (checkArguments(message, command, args)) {
+                command.execute(message, args)
+                    .then(() => logger.info(`${message.author.tag} successfully executed "${cmd}".`))
+                    .catch((r) => {
+                        message.channel.send(errors.GENERAL_ERROR(command))
+                    });
+            } else {
+                message.channel.send(errors.ARGUMENT_ERROR(command));
+                logger.info(`${message.author.tag} used the wrong arguments for "${cmd}".`);
+            }
         } else {
             message.channel.send(errors.PERMISSION_ERROR(command));
             logger.warn(`${message.author.tag} does not have the permission to execute "${cmd}".`);
@@ -88,6 +95,19 @@ function command(message, content) {
         message.channel.send(errors.NO_SUCH_COMMAND_ERROR(cmd));
         logger.warn(`${message.author.tag} tried to issue non-existing command "${cmd}".`)
     }
+}
+
+function checkArguments(message, command, args) {
+    if (command.args.length <= args.length) {
+        for (let position = 0; position < command.args.length; position++) {
+            if (!command.args[position].check(args[position])) {
+                return false;
+            }
+        }
+    } else {
+        return false;
+    }
+    return true;
 }
 
 

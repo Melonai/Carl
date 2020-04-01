@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 module.exports = {
     PERMISSION_ERROR: makePermissionError,
     NO_SUCH_COMMAND_ERROR: makeNoSuchCommandError,
-    GENERAL_ERROR: makeGeneralError
+    GENERAL_ERROR: makeGeneralError,
+    ARGUMENT_ERROR: makeArgumentError
 };
 
 const defaultTitle = 'Oh no...';
@@ -16,14 +17,20 @@ function makePermissionError(command) {
     return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
 }
 
-function makeNoSuchCommandError(command) {
-    const description = `A command named "${command}" was not found.`;
+function makeNoSuchCommandError(cmd) {
+    const description = `A command named "${cmd}" was not found.`;
 
     return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
 }
 
 function makeGeneralError() {
     const description = 'An error occurred.';
+
+    return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
+}
+
+function makeArgumentError(command) {
+    const description = `The usage for this command is "carl ${command.handles[0]}".`;
 
     return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
 }

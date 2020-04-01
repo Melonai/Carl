@@ -1,9 +1,11 @@
 const Verification = require('../verification.js');
+const Arguments = require('../arguments.js');
 
 module.exports = {
     name: 'Question',
     description: 'Ask me something!',
     handles: ['will', 'can', 'is', 'does', 'are', 'was', 'do', 'don\'t', 'doesn\'t', 'am', 'did'],
+    args: [Arguments.Any],
     verify: Verification.everyone,
     execute: main
 };

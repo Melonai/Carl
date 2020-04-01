@@ -4,6 +4,7 @@ module.exports = {
     name: 'Ping',
     description: 'Pong.',
     handles: ['ping'],
+    args: [],
     verify: Verification.everyone,
     execute: main
 };
