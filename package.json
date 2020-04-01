@@ -1,5 +1,5 @@
 {
-  "name": "Carl",
+  "name": "carl",
   "version": "0.0.1",
   "description": "Carl's cool!",
   "main": "bot.js",
@@ -7,5 +7,22 @@
   "dependencies": {
     "discord.js": "^12.0.2",
     "winston": "^3.2.1"
-  }
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Melonai/Carl.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Melonai/Carl/issues"
+  },
+  "homepage": "https://github.com/Melonai/Carl#readme"
 }

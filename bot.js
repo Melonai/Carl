@@ -2,9 +2,18 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const winston = require('winston');
 
-const auth = require('./auth.json');
 const config = require('./config.json');
 const errors = require('./errors.js');
+
+let auth;
+
+try {
+    if (fs.existsSync('./auth.json')) {
+        auth = require('./auth.json');
+    }
+} catch (e) {
+    auth = process.env.TOKEN;
+}
 
 const logger = winston.createLogger({
     level: 'debug',
