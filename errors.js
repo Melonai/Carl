@@ -30,7 +30,7 @@ function makeGeneralError() {
 }
 
 function makeArgumentError(command) {
-    const description = `The usage for this command is "carl ${command.handles[0]}".`;
+    const description = `The usage for this command is "${command.getUsage()}".`;
 
     return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
 }

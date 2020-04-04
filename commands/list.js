@@ -1,19 +1,16 @@
-const Discord = require('discord.js');
-const Verification = require('../verification.js');
-const Arguments = require('../arguments.js');
+const {Command, Arguments, Discord} = require('../command.js');
 
-module.exports = {
+module.exports = new Command({
     name: 'List',
     description: 'This will list all commands available to me.',
     handles: ['list'],
-    args: [new Arguments.Ranged(1, 5)],
-    verify: Verification.everyone,
-    execute: main
-};
+    execute: main,
+    args: [new Arguments.Ranged(1, 5)]
+});
 
 const pageSize = 10;
 
-async function main(message, args) {
+async function main(command, message, args) {
     const pageNumber = (typeof args[0] === 'undefined') ? 1 : parseInt(args[0]);
     const pageAmount = Math.ceil(message.client.commands.length / pageSize);
 

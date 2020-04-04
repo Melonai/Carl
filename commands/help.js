@@ -1,25 +1,23 @@
-const Discord = require('discord.js');
-const Verification = require('../verification.js');
-const Arguments = require('../arguments.js');
+const {Command, Arguments, Discord} = require('../command.js');
 
-module.exports = {
+module.exports = new Command({
     name: 'Help',
     description: 'I\'ll help you with a command!',
     handles: ['help'],
-    args: [Arguments.Any],
-    verify: Verification.everyone,
-    execute: main
-};
+    execute: main,
+    args: [Arguments.Any]
+});
 
-async function main(message, args) {
-    const command = message.client.handles.get(args[0]);
-    if (typeof command !== 'undefined') {
+async function main(command, message, args) {
+    const commandToCheck = message.client.handles.get(args[0]);
+    if (typeof commandToCheck !== 'undefined') {
         const embed = new Discord.MessageEmbed();
-        const title = command.name;
-        const description = command.description;
+        const title = commandToCheck.name;
+        const description = commandToCheck.description;
         embed.setTitle(title).setDescription(description);
-        embed.addField("Usage", "carl " + command.handles[0]);
-        embed.addField("Permission Level", command.verify.name);
+        console.log(commandToCheck);
+        embed.addField("Usage", commandToCheck.getUsage());
+        embed.addField("Permission Level", commandToCheck.verify.name);
         message.channel.send(embed);
     }
 }

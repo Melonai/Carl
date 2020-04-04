@@ -1,16 +1,14 @@
-const Verification = require('../verification.js');
-const Arguments = require('../arguments.js');
+const {Command, Arguments} = require('../command.js');
 
-module.exports = {
+module.exports = new Command({
     name: 'Say',
     description: 'I\'ll say whatever you want me to say!',
     handles: ['say'],
-    args: [Arguments.Any],
-    verify: Verification.everyone,
-    execute: main
-};
+    execute: main,
+    args: [Arguments.Any]
+});
 
-async function main(message, args) {
+async function main(command, message, args) {
     message.delete();
     message.channel.send(args.join(" "));
 }

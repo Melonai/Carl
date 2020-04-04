@@ -1,14 +1,12 @@
-const Verification = require('../verification.js');
+const {Command} = require('../command.js');
 
-module.exports = {
+module.exports = new Command({
     name: 'Ping',
     description: 'Pong.',
     handles: ['ping'],
-    args: [],
-    verify: Verification.everyone,
     execute: main
-};
+});
 
-async function main(message, args) {
+async function main(command, message, args) {
     message.channel.send('Pong.');
 }
