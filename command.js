@@ -28,14 +28,10 @@ class Command {
     }
 
     checkArguments(givenArguments) {
-        if (this.args.length <= givenArguments.length) {
-            for (let position = 0; position < this.args.length; position++) {
-                if (!this.args[position].check(givenArguments[position])) {
-                    return false;
-                }
+        for (let position = 0; position < this.args.length; position++) {
+            if (!this.args[position].check(givenArguments[position])) {
+                return false;
             }
-        } else {
-            return false;
         }
         return true;
     }

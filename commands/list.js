@@ -5,7 +5,7 @@ module.exports = new Command({
     description: 'This will list all commands available to me.',
     handles: ['list'],
     execute: main,
-    args: [new Arguments.Ranged(1, 5)]
+    args: [Arguments.NumberOptional]
 });
 
 const pageSize = 10;

@@ -60,6 +60,16 @@ bot.loadCommands = () => {
     logger.info(`${bot.commands.length} commands loaded!`);
 };
 
+bot.guildDataInit = guild => {
+    guild.data = {
+        music: {
+            queue: [],
+            connection: null,
+            volume: 7
+        }
+    }
+};
+
 bot.once('ready', () => {
     logger.info('Ready!');
 });
@@ -73,6 +83,7 @@ bot.on('message', message => {
 });
 
 function command(message, content) {
+    if (message.author.bot) return;
     const args = content.split(' ');
     const cmd = args.shift().toLowerCase();
     const command = bot.handles.get(cmd);

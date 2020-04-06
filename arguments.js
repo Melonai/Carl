@@ -28,13 +28,31 @@ class Number {
     }
 }
 
+class NumberOptional {
+    static getName() {
+        return "{optional number}";
+    }
+    static check(arg) {
+        return !isNaN(arg) || typeof arg === 'undefined';
+    }
+}
+
+class Optional {
+    static getName() {
+        return "{optional}";
+    }
+    static check(arg) {
+        return true;
+    }
+}
+
 class Ranged {
     constructor(from_num, to_num) {
         this.from_num = from_num;
         this.to_num = to_num;
     }
     getName() {
-        return `{${this.from_num} - ${this.to_num}`;
+        return `{${this.from_num} - ${this.to_num}}`;
     }
     check(arg) {
         return arg >= this.from_num && arg <= this.to_num;
@@ -45,5 +63,7 @@ module.exports = {
     Any: Any,
     User: User,
     Number: Number,
+    NumberOptional: NumberOptional,
+    Optional: Optional,
     Ranged: Ranged
 };

@@ -15,7 +15,6 @@ async function main(command, message, args) {
         const title = commandToCheck.name;
         const description = commandToCheck.description;
         embed.setTitle(title).setDescription(description);
-        console.log(commandToCheck);
         embed.addField("Usage", commandToCheck.getUsage());
         embed.addField("Permission Level", commandToCheck.verify.name);
         message.channel.send(embed);
