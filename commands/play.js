@@ -37,6 +37,8 @@ async function main(command, message, args) {
                 })
                 .on('error', r => command.client.logger.error(r.message));
             dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+        } else {
+            if (musicData.connection) musicData.connection.disconnect();
         }
     };
 
