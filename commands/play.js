@@ -1,12 +1,12 @@
 const {Command, Arguments, Discord} = require('../command.js');
-const ytdlOpus = require('ytdl-core-discord');
+const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 
 module.exports = new Command({
     name: 'Play',
     description: 'Play a song from YouTube.',
-    handles: ['play'],
+    handles: ['play', 'p'],
     execute: main,
     args: [Arguments.Any]
 });
@@ -22,15 +22,19 @@ async function main(command, message, args) {
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
             const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
+
             const embed = new Discord.MessageEmbed()
                 .setTitle('Now Playing:')
                 .setDescription(song.title)
                 .setThumbnail(thumbnails[thumbnails.length-1].url)
                 .addField("Added By:", song.user.tag, true)
-                .addField("Duration:", song.duration, true);
+                .addField("Duration:", song.duration, true)
+                .setColor('#0069ff');
+
             message.channel.send(embed);
+
             const dispatcher = musicData.connection
-                .play(await ytdlOpus(song.video_url), {type: 'opus', highWaterMark: 50})
+                .play(await ytdlOpus(song.video_url, {highWaterMark: 1<<25}), {type: 'opus', highWaterMark: 50})
                 .on('finish', () => {
                     musicData.queue.shift();
                     nextSong();
@@ -41,6 +45,7 @@ async function main(command, message, args) {
             if (musicData.connection) {
                 musicData.connection.disconnect();
                 musicData.connection = undefined;
+                message.channel.send("The queue has finished! Use play to play more songs.")
             }
         }
     };
@@ -50,12 +55,15 @@ async function main(command, message, args) {
         song.user = message.member.user;
         song.duration = new Date(song.length_seconds * 1000).toISOString().substr(11, 8);
         musicData.queue.push(song);
+
         const embed = new Discord.MessageEmbed()
             .setTitle('Added to queue:')
             .setDescription(song.title)
             .addField("Duration:", song.duration)
             .addField("Position in queue:", musicData.queue.length - 1)
-            .setAuthor(song.user.tag, song.user.displayAvatarURL());
+            .setAuthor(song.user.tag, song.user.displayAvatarURL())
+            .setColor('#ff9664');
+
         message.channel.send(embed);
     };
 

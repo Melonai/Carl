@@ -3,7 +3,7 @@ const {Command, Discord} = require('../command.js');
 module.exports = new Command({
     name: 'Currently Playing',
     description: 'Displays the current song playing.',
-    handles: ['current', 'playing'],
+    handles: ['current', 'playing', 'c'],
     execute: main
 });
 
@@ -19,7 +19,8 @@ async function main(command, message, args) {
             .setDescription(song.title)
             .setThumbnail(thumbnails[thumbnails.length - 1].url)
             .addField("Added By:", song.user.tag, true)
-            .addField("Duration:", `${new Date(musicData.connection.dispatcher.streamTime).toISOString().substr(11, 8)} / ${song.duration}`, true);
+            .addField("Duration:", `${new Date(musicData.connection.dispatcher.streamTime).toISOString().substr(11, 8)} / ${song.duration}`, true)
+            .setColor('#0069ff');
         message.channel.send(embed);
     } else {
         message.channel.send("Nothing is currently playing.");

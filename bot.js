@@ -84,7 +84,7 @@ bot.on('message', message => {
 
 function command(message, content) {
     if (message.author.bot) return;
-    const args = content.split(' ');
+    const args = content.split(' ').filter(a => a);
     const cmd = args.shift().toLowerCase();
     const command = bot.handles.get(cmd);
     if (typeof command !== 'undefined') {

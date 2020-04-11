@@ -3,7 +3,7 @@ const {Command} = require('../command.js');
 module.exports = new Command({
     name: 'Skip',
     description: 'Skips the current song.',
-    handles: ['skip'],
+    handles: ['skip', 's'],
     execute: main,
 });
 
