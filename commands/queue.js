@@ -12,7 +12,7 @@ async function main(command, message, args) {
     const musicData = message.guild.data.music;
     const embed = new Discord.MessageEmbed().setTitle("Queue").setColor('#00ffaa');
     message.guild.data.music.queue.forEach((s, i) => {
-        embed.addField(`Position [#${i + 1}] - Suggested by: ${s.user.tag}`, s.title);
+        embed.addField(`[#${i}] - Added by: ${s.user.tag}`, s.title);
     });
     message.channel.send(embed);
 }

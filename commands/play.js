@@ -34,7 +34,7 @@ async function main(command, message, args) {
             message.channel.send(embed);
 
             const dispatcher = musicData.connection
-                .play(await ytdlOpus(song.video_url, {highWaterMark: 1<<25}), {type: 'opus', highWaterMark: 50})
+                .play(await ytdlOpus(song.video_url, {highWaterMark: 1<<23}), {type: 'opus', highWaterMark: 50})
                 .on('finish', () => {
                     musicData.queue.shift();
                     nextSong();

@@ -8,7 +8,7 @@ module.exports = {
 };
 
 const defaultTitle = 'Oh no...';
-const defaultColor = '#ff1996';
+const defaultColor = '#ff0030';
 
 function makePermissionError(command) {
     const description = `You do not have enough permissions to use "${command.name}".
