@@ -14,8 +14,10 @@ class User {
         return "{user}";
     }
     static check(arg) {
-        let timestamp = Discord.SnowflakeUtil.deconstruct(arg).timestamp;
-        return timestamp > 1420070400000 && timestamp < new Date().getTime();
+        if (typeof arg !== 'undefined') {
+            let timestamp = Discord.SnowflakeUtil.deconstruct(arg).timestamp;
+            return timestamp > 1420070400000 && timestamp < new Date().getTime();
+        }
     }
 }
 
