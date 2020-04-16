@@ -1,6 +1,7 @@
 const {Command, Arguments, Discord} = require('../command.js');
 const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
+const ytpl = require('ytpl');
 const ytsr = require('ytsr');
 
 module.exports = new Command({
@@ -12,7 +13,9 @@ module.exports = new Command({
 });
 
 async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
+    if (typeof message.guild.data === 'undefined') {
+        command.client.guildDataInit(message.guild)
+    }
 
     const musicData = message.guild.data.music;
 
@@ -26,7 +29,7 @@ async function main(command, message, args) {
             const embed = new Discord.MessageEmbed()
                 .setTitle('Now Playing:')
                 .setDescription(song.title)
-                .setThumbnail(thumbnails[thumbnails.length-1].url)
+                .setThumbnail(thumbnails[thumbnails.length - 1].url)
                 .addField("Added By:", song.user.tag, true)
                 .addField("Duration:", song.duration, true)
                 .setColor('#0069ff');
@@ -34,7 +37,7 @@ async function main(command, message, args) {
             message.channel.send(embed);
 
             const dispatcher = musicData.connection
-                .play(await ytdlOpus(song.video_url, {highWaterMark: 1<<23}), {type: 'opus', highWaterMark: 50})
+                .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
                 .on('finish', () => {
                     musicData.queue.shift();
                     nextSong();
@@ -69,6 +72,11 @@ async function main(command, message, args) {
 
     if (ytdl.validateURL(query)) {
         await addSong(query);
+    } else if (ytpl.validateURL(query)) {
+        const playlist = await ytpl(query);
+        playlist.items.forEach((video) => {
+            addSong(video.url);
+        });
     } else {
         message.channel.send(`Searching for: ${query}...`);
         const result = await ytsr(query, {limit: 5});

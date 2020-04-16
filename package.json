@@ -10,7 +10,8 @@
     "winston": "^3.2.1",
     "ytdl-core": "^2.1.0",
     "ytsr": "^0.1.12",
-    "prism-media": "latest"
+    "ytpl": "^0.1.20",
+    "prism-media": "^1.2.1"
   },
   "engines": {
     "node": "12.x"
