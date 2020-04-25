@@ -75,11 +75,12 @@ bot.once('ready', () => {
 });
 
 bot.on('message', message => {
-    config.prefixes.forEach(prefix => {
+    for (let prefix of config.prefixes) {
         if (message.content.toLowerCase().startsWith(prefix)) {
             command(message, message.content.substring(prefix.length));
+            break;
         }
-    });
+    }
 });
 
 function command(message, content) {
