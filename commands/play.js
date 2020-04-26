@@ -24,22 +24,27 @@ async function main(command, message, args) {
     const nextSong = async () => {
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
-            const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
 
-            const embed = new Discord.MessageEmbed()
-                .setTitle('Now Playing:')
-                .setDescription(song.title)
-                .setThumbnail(thumbnails[thumbnails.length - 1].url)
-                .addField("Added By:", song.user.tag, true)
-                .addField("Duration:", song.duration, true)
-                .setColor('#0069ff');
+            if (!musicData.loop) {
+                const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
 
-            message.channel.send(embed);
+                const embed = new Discord.MessageEmbed()
+                    .setTitle('Now Playing:')
+                    .setDescription(song.title)
+                    .setThumbnail(thumbnails[thumbnails.length - 1].url)
+                    .addField("Added By:", song.user.tag, true)
+                    .addField("Duration:", song.duration, true)
+                    .setColor('#0069ff');
+
+                message.channel.send(embed);
+            }
 
             const dispatcher = musicData.connection
                 .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
                 .on('finish', () => {
-                    musicData.queue.shift();
+                    if (!musicData.loop) {
+                        musicData.queue.shift();
+                    }
                     nextSong();
                 })
                 .on('error', r => command.client.logger.error(r.message));

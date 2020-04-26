@@ -65,7 +65,8 @@ bot.guildDataInit = guild => {
         music: {
             queue: [],
             connection: null,
-            volume: 7
+            volume: 7,
+            loop: false
         }
     }
 };

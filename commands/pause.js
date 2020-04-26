@@ -18,5 +18,7 @@ async function main(command, message, args) {
             musicData.connection.dispatcher.pause();
             message.channel.send("Successfully paused the current song.");
         }
+    } else {
+        message.channel.send("There's nothing currently playing.");
     }
 }
