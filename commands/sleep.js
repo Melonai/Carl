@@ -5,9 +5,11 @@ module.exports = new Command({
     description: 'I go to sleep for a while! ^^',
     handles: ['sleep'],
     execute: main,
-    verify: Verification.trusted
+    verify: Verification.trusted,
+    tags: ['hidden']
 });
 
-async function main(command, message, args) {
-    message.channel.send('Good night! ^^').then(() => message.client.destroy());
+async function main(command, message) {
+    await command.client.send('Good night! ^^', message.channel);
+    message.client.destroy();
 }

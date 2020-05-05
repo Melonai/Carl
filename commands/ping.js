@@ -7,6 +7,6 @@ module.exports = new Command({
     execute: main
 });
 
-async function main(command, message, args) {
-    message.channel.send('Pong.');
+async function main(command, message) {
+    await command.client.send('Pong.', message.channel);
 }

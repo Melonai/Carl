@@ -6,9 +6,10 @@ module.exports = new Command({
     handles: ['reload-commands', 'reload'],
     execute: main,
     verify: Verification.trusted,
+    tags: ['hidden']
 });
 
-async function main(command, message, args) {
+async function main(command, message) {
     message.client.loadCommands();
-    message.channel.send(`${message.client.commands.length} commands were successfully loaded!`);
+    await command.client.send('`${message.client.commands.length} commands were successfully loaded!`', message.channel);
 }

@@ -1,14 +1,14 @@
-const {Command, Arguments} = require('../command.js');
+const {Command} = require('../command.js');
 
 module.exports = new Command({
     name: 'Say',
     description: 'I\'ll say whatever you want me to say!',
     handles: ['say'],
     execute: main,
-    args: [Arguments.Any]
+    args: {key: 'text', type: 'text'}
 });
 
-async function main(command, message, args) {
+async function main(command, message, text) {
     message.delete();
-    message.channel.send(args.join(" "));
+    await command.client.send(text, message.channel);
 }

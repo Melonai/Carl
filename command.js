@@ -4,48 +4,76 @@ const Errors = require('./errors.js');
 const Discord = require('discord.js');
 
 class Command {
-    constructor({name, description, handles, execute, verify = Verification.everyone, args = []}) {
-        Object.assign(this, {name, description, handles, execute, verify, args});
+    constructor({name, description, handles, execute, verify = Verification.everyone, args = [], tags = []}) {
+        let args_array = args instanceof Array ? args : [args];
+        Object.assign(this, {name, description, handles, execute, verify, args: args_array, tags});
         this.client = undefined;
     }
 
     run(message, args) {
         if (!this.verify(message.member)) {
-            message.channel.send(Errors.PERMISSION_ERROR(this));
+            this.client.send(Errors.PERMISSION_ERROR(this), message.channel);
             this.client.logger.warn(`${message.author.tag} does not have the permission to execute "${this.name}".`);
             return;
         }
-        if (!this.checkArguments(args)) {
-            message.channel.send(Errors.ARGUMENT_ERROR(this));
+        let checkedArguments = this.formatArguments(args, {guild: message.guild});
+        if (!checkedArguments) {
+            this.client.send(Errors.ARGUMENT_ERROR(this), message.channel);
             this.client.logger.info(`${message.author.tag} used the wrong arguments for "${this.name}".`);
             return;
         }
-        this.execute(this, message, args).then(() => this.client.logger.info(`${message.author.tag} successfully executed "${this.name}".`))
+        this.execute(this, message, ...checkedArguments).then(() => this.client.logger.info(`${message.author.tag} successfully executed "${this.name}".`))
             .catch((r) => {
-                message.channel.send(Errors.GENERAL_ERROR(this));
+                this.client.send(Errors.GENERAL_ERROR(this), message.channel);
                 this.client.logger.error(`"${this.name}" threw an error on execution: ${r}`);
             });
     }
 
-    checkArguments(givenArguments) {
+    formatArguments(givenArguments, context) {
+        let formattedArguments = [];
         for (let position = 0; position < this.args.length; position++) {
-            if (!this.args[position].check(givenArguments[position])) {
-                return false;
+            let commandArgument = this.args[position];
+            let checkType = Arguments.get(commandArgument.type);
+            context.arg = commandArgument;
+
+            if (commandArgument.type === 'text') {
+                let text = checkType(givenArguments.join(' '), context);
+                console.log(text);
+                if (text) {
+                    return [text];
+                } else {
+                    return false;
+                }
+            }
+
+            let userArgument = givenArguments[position];
+            let arg = checkType(userArgument, context);
+            if (arg) {
+                formattedArguments.push(arg);
+            } else {
+                if (!commandArgument.optional) {
+                    return false;
+                } else {
+                    formattedArguments.push(commandArgument.default);
+                }
             }
         }
-        return true;
+        return formattedArguments;
     }
 
     getUsage() {
         let usage =  `${this.client.config.prefixes[0]} ${this.handles[0]} `;
-        this.args.forEach(arg => usage += arg.getName() + " ");
+        this.args.forEach(arg => usage += `[${arg.key}] `);
         return usage;
+    }
+
+    isHidden() {
+        return this.tags.includes('hidden');
     }
 }
 
 module.exports = {
     Command: Command,
     Verification: Verification,
-    Arguments: Arguments,
     Discord: Discord
 };

@@ -1,71 +1,45 @@
 const Discord = require('discord.js');
 
-class Any {
-    static getName() {
-        return "{anything}";
-    }
-    static check(arg) {
-        return !(typeof arg === "undefined");
+function formatText(arg) {
+    if (!(typeof arg === 'undefined')) {
+        return arg;
     }
 }
 
-class User {
-    static getName() {
-        return "{user}";
+function formatSome(arg) {
+    if (!(typeof arg === 'undefined')) {
+        return arg;
     }
-    static check(arg) {
-        if (typeof arg !== 'undefined') {
-            let timestamp = Discord.SnowflakeUtil.deconstruct(arg).timestamp;
-            return timestamp > 1420070400000 && timestamp < new Date().getTime();
+}
+
+function formatUser(arg, context) {
+    if (typeof arg !== 'undefined') {
+        let timestamp = Discord.SnowflakeUtil.deconstruct(arg).timestamp;
+        if (timestamp > 1420070400000 && timestamp < new Date().getTime()) {
+            return context.guild.member(arg.slice(3, -1));
         }
     }
 }
 
-class Number {
-    static getName() {
-        return "{number}";
-    }
-    static check(arg) {
-        return !isNaN(arg);
+function formatNumber(arg) {
+    if (!isNaN(arg)) {
+        return parseInt(arg);
     }
 }
 
-class NumberOptional {
-    static getName() {
-        return "{optional number}";
-    }
-    static check(arg) {
-        return !isNaN(arg) || typeof arg === 'undefined';
+function formatRanged(arg, context) {
+    let num = parseInt(arg);
+    if (num >= context.arg.from && num <= context.arg.to) {
+        return num;
     }
 }
 
-class Optional {
-    static getName() {
-        return "{optional}";
-    }
-    static check(arg) {
-        return true;
-    }
-}
+const types = new Discord.Collection([
+    ['text', formatText],
+    ['some', formatSome],
+    ['user', formatUser],
+    ['number', formatNumber],
+    ['ranged', formatRanged],
+]);
 
-class Ranged {
-    constructor(from_num, to_num) {
-        this.from_num = from_num;
-        this.to_num = to_num;
-    }
-    getName() {
-        return `{${this.from_num} - ${this.to_num}}`;
-    }
-    check(arg) {
-        return arg >= this.from_num && arg <= this.to_num;
-    }
-}
-
-module.exports = {
-    Any: Any,
-    User: User,
-    Number: Number,
-    NumberOptional: NumberOptional,
-    Optional: Optional,
-    Ranged: Ranged
-};
+module.exports = types;

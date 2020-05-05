@@ -1,4 +1,4 @@
-const {Command, Arguments, Verification} = require('../command.js');
+const {Command, Verification} = require('../command.js');
 
 
 module.exports = new Command({
@@ -6,12 +6,12 @@ module.exports = new Command({
     description: 'Executes JavaScript code.',
     handles: ['exec', 'execute'],
     execute: main,
-    args: [Arguments.Any],
-    verify: Verification.trusted
+    args: {key: 'query', type: 'text'},
+    verify: Verification.trusted,
+    tags: ['hidden']
 });
 
-async function main(command, message, args) {
-    const query = args.join(' ');
-    message.channel.send('```' + (Function(query)(command, message, args) || 'Successfully executed.') + '```');
+async function main(command, message, query) {
+    await command.client.send('```' + (Function(query)(command, message) || 'Successfully executed.') + '```', message.channel);
 }
 

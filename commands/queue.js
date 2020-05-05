@@ -7,12 +7,10 @@ module.exports = new Command({
     execute: main,
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
-    const musicData = message.guild.data.music;
+async function main(command, message) {
     const embed = new Discord.MessageEmbed().setTitle("Queue").setColor('#00ffaa');
     message.guild.data.music.queue.forEach((s, i) => {
         embed.addField(`[#${i}] - Added by: ${s.user.tag}`, s.title);
     });
-    message.channel.send(embed);
+    await command.client.send(embed, message.channel);
 }

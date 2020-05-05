@@ -7,13 +7,12 @@ module.exports = new Command({
     execute: main,
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
+async function main(command, message) {
     const musicData = message.guild.data.music;
     if (musicData.connection != null && musicData.connection.dispatcher != null) {
         musicData.connection.dispatcher.end();
-        message.channel.send("Successfully skipped.");
+        await command.client.send('Successfully skipped.', message.channel);
     } else {
-        message.channel.send("There's nothing to skip!");
+        await command.client.send('There\'s nothing to skip!', message.channel);
     }
 }

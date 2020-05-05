@@ -24,9 +24,9 @@ function download(url, options = {}) {
             if (err) return reject(err);
             // Prefer opus
             const format = info.formats.find(filter);
-            const canDemux = format && info.length_seconds != 0;
-            if (canDemux) options = { ...options, filter };
-            else if (info.length_seconds != 0) options = { ...options, filter: 'audioonly' };
+            const canDemux = format && parseInt(info.length_seconds) !== 0;
+            if (canDemux) options = {...options, filter};
+            else if (parseInt(info.length_seconds) !== 0) options = {...options, filter: 'audioonly'};
             if (canDemux) {
                 const demuxer = new prism.opus.WebmDemuxer();
                 return resolve(ytdl.downloadFromInfo(info, options).pipe(demuxer).on('end', () => demuxer.destroy()));
@@ -44,7 +44,7 @@ function download(url, options = {}) {
                         '-ac', '2',
                     ],
                 });
-                const opus = new prism.opus.Encoder({ rate: 48000, channels: 2, frameSize: 960 });
+                const opus = new prism.opus.Encoder({rate: 48000, channels: 2, frameSize: 960});
                 const stream = transcoder.pipe(opus);
                 stream.on('close', () => {
                     transcoder.destroy();
@@ -52,8 +52,8 @@ function download(url, options = {}) {
                 });
                 return resolve(stream);
             }
-        });
-    });
+        }).then();
+     });
 }
 
 module.exports = Object.assign(download, ytdl);

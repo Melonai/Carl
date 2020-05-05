@@ -1,4 +1,4 @@
-const {Command, Discord} = require('../command.js');
+const {Command} = require('../command.js');
 
 module.exports = new Command({
     name: 'Loop',
@@ -7,18 +7,17 @@ module.exports = new Command({
     execute: main,
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
+async function main(command, message) {
     const musicData = message.guild.data.music;
     if (musicData.connection != null) {
         if (musicData.loop) {
             musicData.loop = false;
-            message.channel.send("The current song is no longer on loop.");
+            await command.client.send('The current song is no longer on loop.', message.channel);
         } else {
             musicData.loop = true;
-            message.channel.send("The current song is now on loop!");
+            await command.client.send('The current song is now on loop!', message.channel);
         }
     } else {
-        message.channel.send("I'm not connected to any voice channel!");
+        await command.client.send('I\'m not connected to any voice channel!', message.channel);
     }
 }

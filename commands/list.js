@@ -1,25 +1,24 @@
-const {Command, Arguments, Discord} = require('../command.js');
+const {Command, Discord} = require('../command.js');
 
 module.exports = new Command({
     name: 'List',
     description: 'This will list all commands available to me.',
     handles: ['list'],
     execute: main,
-    args: [Arguments.NumberOptional]
+    args: {key: 'page', type: 'ranged', from: 1, to: 3, optional: true, default: 1}
 });
 
 const pageSize = 10;
 
-async function main(command, message, args) {
-    const pageNumber = (typeof args[0] === 'undefined') ? 1 : parseInt(args[0]);
-    const pageAmount = Math.ceil(message.client.commands.length / pageSize);
-
+async function main(command, message, pageNumber) {
+    const visibleCommands = message.client.commands.filter(c => !c.isHidden());
+    const pageAmount = Math.ceil(visibleCommands.length / pageSize);
     const embed = new Discord.MessageEmbed().setTitle('List of commands:');
 
-    let commandPage = message.client.commands.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
-    commandPage.map(c => embed.addField(c.name, c.description));
+    let commandPage = visibleCommands.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+    commandPage.forEach(c => embed.addField(c.name, c.description));
 
     embed.setFooter(`Page ${pageNumber} out of ${pageAmount}`);
 
-    message.channel.send(embed);
+    await command.client.send(embed, message.channel);
 }

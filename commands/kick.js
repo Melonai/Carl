@@ -1,16 +1,15 @@
-const {Command, Verification, Arguments} = require('../command.js');
+const {Command, Verification} = require('../command.js');
 
 module.exports = new Command({
     name: 'Kick',
     description: 'Kicks the user mentioned.',
     handles: ['kick'],
     execute: main,
-    args: [Arguments.User],
+    args: {key: "member_to_kick", type: 'user'},
     verify: Verification.admin
 });
 
-async function main(command, message, args) {
-    const memberToKick = message.mentions.members.first();
-    memberToKick.kick();
-    message.channel.send(`Successfully kicked ${memberToKick.user.tag}.`);
+async function main(command, message, memberToKick) {
+    await memberToKick.kick();
+    await command.client.send(`Successfully kicked ${memberToKick.user.tag}.`, message.channel);
 }

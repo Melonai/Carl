@@ -7,9 +7,7 @@ module.exports = new Command({
     execute: main
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
-
+async function main(command, message) {
     const musicData = message.guild.data.music;
     if (musicData.connection != null && musicData.connection.dispatcher != null) {
         const song = musicData.queue[0];
@@ -18,11 +16,11 @@ async function main(command, message, args) {
             .setTitle('Currently Playing:')
             .setDescription(song.title)
             .setThumbnail(thumbnails[thumbnails.length - 1].url)
-            .addField("Added By:", song.user.tag, true)
-            .addField("Duration:", `${new Date(musicData.connection.dispatcher.streamTime).toISOString().substr(11, 8)} / ${song.duration}`, true)
+            .addField('Added By', song.user.tag, true)
+            .addField('Duration:', `${new Date(musicData.connection.dispatcher.streamTime).toISOString().substr(11, 8)} / ${song.duration}`, true)
             .setColor('#0069ff');
-        message.channel.send(embed);
+        await command.client.send(embed, message.channel);
     } else {
-        message.channel.send("Nothing is currently playing.");
+        await command.client.send('Nothing is currently playing.', message.channel);
     }
 }

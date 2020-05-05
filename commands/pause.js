@@ -7,18 +7,17 @@ module.exports = new Command({
     execute: main,
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {command.client.guildDataInit(message.guild)}
+async function main(command, message) {
     const musicData = message.guild.data.music;
     if (musicData.connection != null && musicData.connection.dispatcher != null) {
         if (musicData.connection.dispatcher.paused) {
             musicData.connection.dispatcher.resume();
-            message.channel.send("Successfully resumed the current song.");
+            await command.client.send('Successfully resumed the current song.', message.channel);
         } else {
             musicData.connection.dispatcher.pause();
-            message.channel.send("Successfully paused the current song.");
+            await command.client.send('Successfully paused the current song.', message.channel);
         }
     } else {
-        message.channel.send("There's nothing currently playing.");
+        await command.client.send('There\'s nothing currently playing.', message.channel);
     }
 }

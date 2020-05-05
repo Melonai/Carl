@@ -1,4 +1,4 @@
-const {Command, Arguments, Discord} = require('../command.js');
+const {Command, Discord} = require('../command.js');
 const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
@@ -9,17 +9,11 @@ module.exports = new Command({
     description: 'Play a song from YouTube.',
     handles: ['play', 'p'],
     execute: main,
-    args: [Arguments.Any]
+    args: {key: 'query', type: 'text'}
 });
 
-async function main(command, message, args) {
-    if (typeof message.guild.data === 'undefined') {
-        command.client.guildDataInit(message.guild)
-    }
-
+async function main(command, message, query) {
     const musicData = message.guild.data.music;
-
-    const query = args.join(' ');
 
     const nextSong = async () => {
         if (musicData.queue.length !== 0) {
@@ -36,7 +30,7 @@ async function main(command, message, args) {
                     .addField("Duration:", song.duration, true)
                     .setColor('#0069ff');
 
-                message.channel.send(embed);
+                await command.client.send(embed, message.channel);
             }
 
             const dispatcher = musicData.connection
@@ -53,7 +47,7 @@ async function main(command, message, args) {
             if (musicData.connection) {
                 musicData.connection.disconnect();
                 musicData.connection = undefined;
-                message.channel.send("The queue has finished! Use play to play more songs.")
+                await command.client.send('The queue has finished! Use play to play more songs.', message.channel);
             }
         }
     };
@@ -72,7 +66,7 @@ async function main(command, message, args) {
             .setAuthor(song.user.tag, song.user.displayAvatarURL())
             .setColor('#ff9664');
 
-        message.channel.send(embed);
+        await command.client.send(embed, message.channel);
     };
 
     if (ytdl.validateURL(query)) {
@@ -83,7 +77,7 @@ async function main(command, message, args) {
             addSong(video.url);
         });
     } else {
-        message.channel.send(`Searching for: ${query}...`);
+        await command.client.send(`Searching for: ${query}...`, message.channel);
         const result = await ytsr(query, {limit: 5});
         for (let i = 0; i < result.items.length; i++) {
             if (result.items[i].type === 'video') {

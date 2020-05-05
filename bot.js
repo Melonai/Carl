@@ -71,6 +71,14 @@ bot.guildDataInit = guild => {
     }
 };
 
+bot.send = (message, channel) => {
+    if (message !== '') {
+        channel.send(message).then().catch(() =>
+            bot.logger.error("Failed to send message.")
+        );
+    }
+};
+
 bot.once('ready', () => {
     logger.info('Ready!');
 });
@@ -85,6 +93,7 @@ bot.on('message', message => {
 });
 
 function command(message, content) {
+    if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
     if (message.author.bot) return;
     const args = content.split(' ').filter(a => a);
     const cmd = args.shift().toLowerCase();
@@ -92,7 +101,7 @@ function command(message, content) {
     if (typeof command !== 'undefined') {
         command.run(message, args);
     } else {
-        message.channel.send(Errors.NO_SUCH_COMMAND_ERROR(cmd));
+        bot.send(Errors.NO_SUCH_COMMAND_ERROR(cmd), message.channel);
         logger.warn(`${message.author.tag} tried to issue non-existing command "${cmd}".`)
     }
 }
