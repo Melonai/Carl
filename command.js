@@ -4,9 +4,9 @@ const Errors = require('./errors.js');
 const Discord = require('discord.js');
 
 class Command {
-    constructor({name, description, handles, execute, verify = Verification.everyone, args = [], tags = []}) {
+    constructor({name, description, handles, execute, verify = Verification.everyone, args = [], flags = []}) {
         let args_array = args instanceof Array ? args : [args];
-        Object.assign(this, {name, description, handles, execute, verify, args: args_array, tags});
+        Object.assign(this, {name, description, handles, execute, verify, args: args_array, flags});
         this.client = undefined;
     }
 
@@ -38,7 +38,6 @@ class Command {
 
             if (commandArgument.type === 'text') {
                 let text = checkType(givenArguments.join(' '), context);
-                console.log(text);
                 if (text) {
                     return [text];
                 } else {
@@ -68,7 +67,7 @@ class Command {
     }
 
     isHidden() {
-        return this.tags.includes('hidden');
+        return this.flags.includes('hidden');
     }
 }
 

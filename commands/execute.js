@@ -8,7 +8,7 @@ module.exports = new Command({
     execute: main,
     args: {key: 'query', type: 'text'},
     verify: Verification.trusted,
-    tags: ['hidden']
+    flags: ['hidden']
 });
 
 async function main(command, message, query) {

@@ -6,7 +6,7 @@ module.exports = new Command({
     handles: ['sleep'],
     execute: main,
     verify: Verification.trusted,
-    tags: ['hidden']
+    flags: ['hidden']
 });
 
 async function main(command, message) {

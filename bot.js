@@ -60,6 +60,26 @@ bot.loadCommands = () => {
     logger.info(`${bot.commands.length} commands loaded!`);
 };
 
+bot.addRule = path => {
+    const rule = require('./rules/' + path);
+    bot.rules.push(rule);
+    rule.client = bot;
+};
+
+bot.loadRules = () => {
+    bot.rules = [];
+    fs.readdirSync('./rules').forEach(file => {
+        if (file.endsWith('.js')) {
+            const fullPath = __dirname + '/rules/' + file;
+            if (typeof require.cache[fullPath] !== 'undefined') {
+                delete require.cache[fullPath];
+            }
+            bot.addRule(file);
+        }
+    });
+    logger.info(`${bot.rules.length} rules loaded!`);
+};
+
 bot.guildDataInit = guild => {
     guild.data = {
         music: {
@@ -84,6 +104,14 @@ bot.once('ready', () => {
 });
 
 bot.on('message', message => {
+    if (message.author.bot) return;
+    for (let rule of bot.rules) {
+        if (rule.check(message)) {
+            rule.trigger(message);
+            if (rule.blocksCommands()) return;
+            break;
+        }
+    }
     for (let prefix of config.prefixes) {
         if (message.content.toLowerCase().startsWith(prefix)) {
             command(message, message.content.substring(prefix.length));
@@ -94,7 +122,6 @@ bot.on('message', message => {
 
 function command(message, content) {
     if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
-    if (message.author.bot) return;
     const args = content.split(' ').filter(a => a);
     const cmd = args.shift().toLowerCase();
     const command = bot.handles.get(cmd);
@@ -107,6 +134,8 @@ function command(message, content) {
 }
 
 bot.loadCommands();
+
+bot.loadRules();
 
 bot.login(token).then( () => {
     logger.info('Logged in as: ');
