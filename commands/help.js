@@ -1,4 +1,4 @@
-const {Command, Discord} = require('../command.js');
+const {Command, Discord} = require('../models/command.js');
 
 module.exports = new Command({
     name: 'Help',

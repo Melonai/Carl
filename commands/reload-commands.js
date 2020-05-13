@@ -1,4 +1,4 @@
-const {Command, Verification} = require('../command.js');
+const {Command, Verification} = require('../models/command.js');
 
 module.exports = new Command({
     name: 'Reload Commands',

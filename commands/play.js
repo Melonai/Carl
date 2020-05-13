@@ -1,4 +1,4 @@
-const {Command, Discord} = require('../command.js');
+const {Command, Discord} = require('../models/command.js');
 const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');

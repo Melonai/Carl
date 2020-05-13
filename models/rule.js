@@ -7,7 +7,7 @@ class Rule {
     }
 
     trigger(message) {
-        this.client.logger.info(`${message.author.tag} triggered the "${this.name}" rule.`);
+        if (!this.noLogs()) this.client.logger.info(`${message.author.tag} triggered the "${this.name}" rule.`);
         if (!this.action) {
             message.delete();
         } else if (typeof this.action === 'string') {
@@ -24,6 +24,10 @@ class Rule {
 
     blocksCommands() {
         return this.flags.includes('blocks_commands') || !this.action;
+    }
+
+    noLogs() {
+        return this.flags.includes('no_logs');
     }
 }
 

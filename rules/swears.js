@@ -1,4 +1,4 @@
-const {Rule} = require('../rule.js');
+const {Rule} = require('../models/rule.js');
 const config = require('../config.json');
 
 module.exports = new Rule({

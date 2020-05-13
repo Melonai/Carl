@@ -1,6 +1,6 @@
-const Verification = require('./verification.js');
-const Arguments = require('./arguments.js');
-const Errors = require('./errors.js');
+const Verification = require('../verification.js');
+const Arguments = require('../arguments.js');
+const Errors = require('../errors.js');
 const Discord = require('discord.js');
 
 class Command {

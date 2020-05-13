@@ -4,6 +4,7 @@ const winston = require('winston');
 
 const config = require('./config.json');
 const Errors = require('./errors.js');
+const Database = require('./models/database.js');
 
 let token = process.env.TOKEN || require('./auth.json').token;
 
@@ -22,6 +23,8 @@ const logger = winston.createLogger({
 });
 
 const bot = new Discord.Client();
+
+bot.database = new Database(process.env.DATABASE_URL || require('./auth.json').database, bot);
 
 bot.logger = logger;
 
@@ -105,12 +108,10 @@ bot.once('ready', () => {
 
 bot.on('message', message => {
     if (message.author.bot) return;
-    for (let rule of bot.rules) {
-        if (rule.check(message)) {
-            rule.trigger(message);
-            if (rule.blocksCommands()) return;
-            break;
-        }
+    let triggered = bot.rules.filter((rule) => rule.check(message));
+    for (let rule of triggered) {
+        rule.trigger(message);
+        if (rule.blocksCommands()) return;
     }
     for (let prefix of config.prefixes) {
         if (message.content.toLowerCase().startsWith(prefix)) {
@@ -140,4 +141,8 @@ bot.loadRules();
 bot.login(token).then( () => {
     logger.info('Logged in as: ');
     logger.info(bot.user.tag + ' - (' + bot.user.id + ')');
+});
+
+process.on('exit', () => {
+    bot.database.close();
 });
