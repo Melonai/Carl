@@ -8,7 +8,9 @@ const loadEvents = require('./botEvents.js');
 
 const Database = require('./models/database.js');
 
-let token = process.env.TOKEN || require('./auth.json').token;
+require('dotenv').config()
+
+let token = process.env.TOKEN;
 
 const logger = winston.createLogger({
     level: 'debug',
@@ -26,7 +28,7 @@ const logger = winston.createLogger({
 
 const bot = new Discord.Client();
 
-bot.database = new Database(process.env.DATABASE_URL || require('./auth.json').database, bot);
+bot.database = new Database(process.env.DATABASE_URL, bot);
 
 bot.logger = logger;
 
