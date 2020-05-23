@@ -1,9 +1,11 @@
-const fs = require('fs');
 const Discord = require('discord.js');
 const winston = require('winston');
 
 const config = require('./config.json');
-const Errors = require('./errors.js');
+
+const loadFunctions = require('./botFunctions.js');
+const loadEvents = require('./botEvents.js');
+
 const Database = require('./models/database.js');
 
 let token = process.env.TOKEN || require('./auth.json').token;
@@ -30,109 +32,9 @@ bot.logger = logger;
 
 bot.config = config;
 
-bot.addCommand = path => {
-    const command = require('./commands/' + path);
-    command.handles.forEach(handle => {
-        bot.handles.set(handle, command);
-    });
-    command.client = bot;
+loadFunctions(bot);
 
-    for (let i = 0; i < bot.commands.length+1; i++) {
-        if (i === bot.commands.length) {
-            bot.commands.push(command);
-            break;
-        } else if (bot.commands[i].name > command.name) {
-            bot.commands.splice(i, 0, command);
-            break;
-        }
-    }
-};
-
-bot.loadCommands = () => {
-    bot.handles = new Discord.Collection();
-    bot.commands = [];
-    fs.readdirSync('./commands').forEach(file => {
-        if (file.endsWith('.js')) {
-            const fullPath = __dirname + '/commands/' + file;
-            if (typeof require.cache[fullPath] !== 'undefined') {
-                delete require.cache[fullPath];
-            }
-            bot.addCommand(file);
-        }
-    });
-    logger.info(`${bot.commands.length} commands loaded!`);
-};
-
-bot.addRule = path => {
-    const rule = require('./rules/' + path);
-    bot.rules.push(rule);
-    rule.client = bot;
-};
-
-bot.loadRules = () => {
-    bot.rules = [];
-    fs.readdirSync('./rules').forEach(file => {
-        if (file.endsWith('.js')) {
-            const fullPath = __dirname + '/rules/' + file;
-            if (typeof require.cache[fullPath] !== 'undefined') {
-                delete require.cache[fullPath];
-            }
-            bot.addRule(file);
-        }
-    });
-    logger.info(`${bot.rules.length} rules loaded!`);
-};
-
-bot.guildDataInit = guild => {
-    guild.data = {
-        music: {
-            queue: [],
-            connection: null,
-            volume: 7,
-            loop: false
-        }
-    }
-};
-
-bot.send = (message, channel) => {
-    if (message !== '') {
-        channel.send(message).then().catch(() =>
-            bot.logger.error("Failed to send message.")
-        );
-    }
-};
-
-bot.once('ready', () => {
-    logger.info('Ready!');
-});
-
-bot.on('message', message => {
-    if (message.author.bot) return;
-    let triggered = bot.rules.filter((rule) => rule.check(message));
-    for (let rule of triggered) {
-        rule.trigger(message);
-        if (rule.blocksCommands()) return;
-    }
-    for (let prefix of config.prefixes) {
-        if (message.content.toLowerCase().startsWith(prefix)) {
-            command(message, message.content.substring(prefix.length));
-            break;
-        }
-    }
-});
-
-function command(message, content) {
-    if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
-    const args = content.split(' ').filter(a => a);
-    const cmd = args.shift().toLowerCase();
-    const command = bot.handles.get(cmd);
-    if (typeof command !== 'undefined') {
-        command.run(message, args);
-    } else {
-        bot.send(Errors.NO_SUCH_COMMAND_ERROR(cmd), message.channel);
-        logger.warn(`${message.author.tag} tried to issue non-existing command "${cmd}".`)
-    }
-}
+loadEvents(bot);
 
 bot.loadCommands();
 
