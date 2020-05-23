@@ -11,5 +11,5 @@ module.exports = new Command({
 
 async function main(command, message) {
     message.client.loadCommands();
-    await command.client.send('`${message.client.commands.length} commands were successfully loaded!`', message.channel);
+    await command.client.send(`${message.client.commands.length} commands were successfully loaded!`, message.channel);
 }
