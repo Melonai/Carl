@@ -5,7 +5,7 @@ function loadEvents(bot) {
 
     bot.on('message', message => {
         if (message.author.bot) return;
-        let triggered = bot.rules.filter((rule) => rule.check(message));
+        let triggered = bot.rules.getRules().filter((rule) => rule.check(message));
         for (let rule of triggered) {
             rule.trigger(message);
             if (rule.blocksCommands()) return;

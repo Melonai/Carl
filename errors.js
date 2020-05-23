@@ -11,10 +11,14 @@ const defaultTitle = 'Oh no...';
 const defaultColor = '#ff0030';
 
 function makePermissionError(command) {
-    const description = `You do not have enough permissions to use "${command.name}".
+    if (!command.isHidden()) {
+        const description = `You do not have enough permissions to use "${command.name}".
         To use this command you need at least a permission level of "${command.verify.name}"`;
 
-    return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
+        return new Discord.MessageEmbed().setTitle(defaultTitle).setDescription(description).setColor(defaultColor);
+    } else {
+        return makeNoSuchCommandError();
+    }
 }
 
 function makeNoSuchCommandError(cmd) {

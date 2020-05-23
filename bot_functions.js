@@ -1,28 +1,6 @@
-const fs = require('fs');
-
 const Errors = require('./errors.js');
 
 function loadFunctions(bot) {
-    bot.addRule = path => {
-        const rule = require('./rules/' + path);
-        bot.rules.push(rule);
-        rule.client = bot;
-    };
-
-    bot.loadRules = () => {
-        bot.rules = [];
-        fs.readdirSync('./rules').forEach(file => {
-            if (file.endsWith('.js')) {
-                const fullPath = __dirname + '/rules/' + file;
-                if (typeof require.cache[fullPath] !== 'undefined') {
-                    delete require.cache[fullPath];
-                }
-                bot.addRule(file);
-            }
-        });
-        bot.logger.info(`${bot.rules.length} rules loaded!`);
-    };
-
     bot.guildDataInit = guild => {
         guild.data = {
             music: {

@@ -8,6 +8,7 @@ const loadEvents = require('./bot_events.js');
 
 const DatabaseManager = require('./managers/database_manager.js');
 const CommandManager = require('./managers/command_manager.js');
+const RuleManager = require('./managers/rule_manager.js');
 
 require('dotenv').config()
 
@@ -33,11 +34,10 @@ bot.logger = logger;
 bot.config = config;
 bot.database = new DatabaseManager(process.env.DATABASE_URL, bot);
 bot.commands = new CommandManager(bot);
+bot.rules = new RuleManager(bot);
 
 loadFunctions(bot);
 loadEvents(bot);
-
-bot.loadRules();
 
 bot.login(token).then( () => {
     logger.info('Logged in as: ');
