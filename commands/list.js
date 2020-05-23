@@ -11,8 +11,9 @@ module.exports = new Command({
 const pageSize = 10;
 
 async function main(command, message, pageNumber) {
-    const visibleCommands = message.client.commands.filter(c => !c.isHidden());
+    const visibleCommands = command.client.commands.getVisibleCommands();
     const pageAmount = Math.ceil(visibleCommands.length / pageSize);
+    command.args[0].to = pageAmount;
     const embed = new Discord.MessageEmbed().setTitle('List of commands:');
 
     let commandPage = visibleCommands.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);

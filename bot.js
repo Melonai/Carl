@@ -3,10 +3,11 @@ const winston = require('winston');
 
 const config = require('./config.json');
 
-const loadFunctions = require('./botFunctions.js');
-const loadEvents = require('./botEvents.js');
+const loadFunctions = require('./bot_functions.js');
+const loadEvents = require('./bot_events.js');
 
-const Database = require('./models/database.js');
+const DatabaseManager = require('./managers/database_manager.js');
+const CommandManager = require('./managers/command_manager.js');
 
 require('dotenv').config()
 
@@ -28,17 +29,13 @@ const logger = winston.createLogger({
 
 const bot = new Discord.Client();
 
-bot.database = new Database(process.env.DATABASE_URL, bot);
-
 bot.logger = logger;
-
 bot.config = config;
+bot.database = new DatabaseManager(process.env.DATABASE_URL, bot);
+bot.commands = new CommandManager(bot);
 
 loadFunctions(bot);
-
 loadEvents(bot);
-
-bot.loadCommands();
 
 bot.loadRules();
 

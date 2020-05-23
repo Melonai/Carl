@@ -9,7 +9,7 @@ module.exports = new Command({
 });
 
 async function main(command, message, cmd) {
-    const commandToCheck = message.client.handles.get(cmd);
+    const commandToCheck = command.client.commands.getCommand(cmd);
     if (typeof commandToCheck !== 'undefined' && !commandToCheck.isHidden()) {
         const title = commandToCheck.name;
         const description = commandToCheck.description;

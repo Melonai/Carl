@@ -1,6 +1,6 @@
 const pg = require('pg');
 
-class Database {
+class DatabaseManager {
     constructor(url, client) {
         this.connection = new pg.Client({
             connectionString: url,
@@ -14,8 +14,8 @@ class Database {
         let query = 'SELECT * FROM users WHERE id = $1';
         this.connection.query(query, [user.id], (err, res) => {
             if (err) {
-                this.client.logger.error(`Failed to get user ${user.id} due to: ${err.stack}`)
-                return undefined
+                this.client.logger.error(`Failed to get user ${user.id} due to: ${err.stack}`);
+                return undefined;
             }
             return callback(res.rows[0]);
         });
@@ -41,4 +41,4 @@ class Database {
     }
 }
 
-module.exports = Database;
+module.exports = DatabaseManager;
