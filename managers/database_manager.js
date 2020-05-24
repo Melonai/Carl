@@ -28,6 +28,21 @@ class DatabaseManager {
         }
     }
 
+    async getTopUsers(callback) {
+        if (this.connection) {
+            let query = 'SELECT * FROM users ORDER BY points DESC;';
+            this.connection.query(query, [], (err, res) => {
+                if (err) {
+                    this.client.logger.error(`Failed to get top users due to: ${err.stack}`);
+                    return undefined;
+                }
+                return callback(res.rows);
+            });
+        } else {
+            return undefined;
+        }
+    }
+
     async addUser(user) {
         if (this.connection) {
             let query = 'INSERT INTO users(id, points) VALUES ($1, 0)';
