@@ -7,7 +7,7 @@ module.exports = new Rule({
     flags: ['no_logs']
 });
 
-async function main(message) {
+async function main(rule, message) {
     const currentTime = new Date().getTime();
     if (!message.author.lastMessageTimestamp || message.author.lastMessageTimestamp + 60000 < currentTime) {
         if (message.client.database.connectionExists()) {

@@ -8,13 +8,17 @@ class Rule {
 
     trigger(message) {
         if (!this.noLogs()) this.client.logger.info(`${message.author.tag} triggered the "${this.name}" rule.`);
-        if (!this.action) {
-            message.delete();
-        } else if (typeof this.action === 'string') {
-            this.client.send(this.action, message.channel);
-        } else if (typeof this.action === 'function') {
-            if (message.deleted) return;
-            this.action(message);
+        if (!message.deleted) {
+            if (!this.action) {
+                message.deleted = true;
+                message.delete()
+                    .catch(() => this.client.logger.error(`"${this.name}" couldn't delete a message.`));
+            } else if (typeof this.action === 'string') {
+                this.client.send(this.action, message.channel);
+            } else if (typeof this.action === 'function') {
+                this.action(this, message)
+                    .catch(() => this.client.logger.error(`Couldn't trigger the "${this.name}" rule.`));
+            }
         }
     }
 
