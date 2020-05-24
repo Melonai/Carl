@@ -8,9 +8,11 @@ module.exports = new Rule({
 });
 
 async function main(message) {
-    await message.client.database.addPoints(message.author, 1, rowCount => {
-        if (rowCount === 0) {
-            message.client.database.addUser(message.author);
-        }
-    });
+    if (message.client.database.connectionExists()) {
+        await message.client.database.addPoints(message.author, 1, rowCount => {
+            if (rowCount === 0) {
+                message.client.database.addUser(message.author);
+            }
+        });
+    }
 }
