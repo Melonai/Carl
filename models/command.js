@@ -61,7 +61,7 @@ class Command {
     }
 
     getUsage() {
-        let usage =  `${this.client.config.prefixes[0]} ${this.handles[0]} `;
+        let usage =  `${this.client.config.prefixes[0]} ${this.handles.join('/')} `;
         this.args.forEach(arg => usage += `[${arg.key}] `);
         return usage;
     }

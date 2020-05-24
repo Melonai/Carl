@@ -1,4 +1,5 @@
 const {Command, Discord} = require('../models/command.js');
+const choose = require('../utils/choose.js');
 const fetch = require("node-fetch");
 
 module.exports = new Command({
@@ -23,7 +24,7 @@ async function main(command, message) {
 
     const embed = new Discord.MessageEmbed();
     const catTitles = ['Mrroow!', 'Purr~', 'mew!', 'Meow!', 'Nya~', 'MEOW!'];
-    embed.setTitle(catTitles[Math.floor(Math.random() * catTitles.length)]);
+    embed.setTitle(choose(catTitles));
     embed.setImage(response[0].url);
     await command.client.send(embed, message.channel);
 }
