@@ -1,12 +1,11 @@
-const {Command, Verification} = require('../models/command.js');
+const {Command} = require('../models/command.js');
 
 module.exports = new Command({
     name: 'Sleep',
     description: 'I go to sleep for a while! ^^',
     handles: ['sleep'],
     execute: main,
-    verify: Verification.trusted,
-    flags: ['hidden']
+    flags: ['hidden', 'trusted']
 });
 
 async function main(command, message) {

@@ -1,12 +1,13 @@
-const {Command, Verification} = require('../models/command.js');
+const {Command} = require('../models/command.js');
 
 module.exports = new Command({
     name: 'Kick',
     description: 'Kicks the user mentioned.',
     handles: ['kick'],
     execute: main,
-    args: {key: "member_to_kick", type: 'user'},
-    verify: Verification.admin
+    userPermissions: ['KICK_MEMBERS'],
+    botPermissions: ['KICK_MEMBERS'],
+    args: {key: "member_to_kick", type: 'user'}
 });
 
 async function main(command, message, memberToKick) {
