@@ -1,4 +1,5 @@
 const {Command, Discord} = require('../models/command.js');
+const getSubtitles = require('../utils/subtitle-grabber.js');
 const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
@@ -15,23 +16,19 @@ module.exports = new Command({
 async function main(command, message, query) {
     const musicData = message.guild.data.music;
 
+    const nextSubtitle = async (index) => {
+        const currentSong = musicData.queue[0];
+        if (index < currentSong.subtitles.length) {
+            return setTimeout(() => {
+                musicData.subtitleTimeout = nextSubtitle(index + 1);
+                command.client.send(currentSong.subtitles[index].text, message.channel);
+            }, currentSong.subtitles[index].start * 1000 - musicData.connection.dispatcher.streamTime);
+        }
+    }
+
     const nextSong = async () => {
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
-
-            if (!musicData.loop) {
-                const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
-
-                const embed = new Discord.MessageEmbed()
-                    .setTitle('Now Playing:')
-                    .setDescription(song.title)
-                    .setThumbnail(thumbnails[thumbnails.length - 1].url)
-                    .addField("Added By:", song.user.tag, true)
-                    .addField("Duration:", song.duration, true)
-                    .setColor('#0069ff');
-
-                await command.client.send(embed, message.channel);
-            }
 
             const dispatcher = musicData.connection
                 .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
@@ -43,6 +40,25 @@ async function main(command, message, query) {
                 })
                 .on('error', r => command.client.logger.error(r.message));
             dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+
+            if (!musicData.loop) {
+                const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
+
+                const embed = new Discord.MessageEmbed()
+                    .setTitle('Now Playing:')
+                    .setDescription(song.title)
+                    .setThumbnail(thumbnails[thumbnails.length - 1].url)
+                    .addField('Added By:', song.user.tag, true)
+                    .addField('Duration:', song.duration, true)
+                    .setColor('#0069ff');
+
+                if (typeof song.subtitles !== 'undefined') {
+                    musicData.subtitleTimeout = nextSubtitle(0);
+                    embed.setFooter('♪ Subtitles are available for this song!');
+                }
+
+                await command.client.send(embed, message.channel);
+            }
         } else {
             if (musicData.connection) {
                 musicData.connection.disconnect();
@@ -54,6 +70,8 @@ async function main(command, message, query) {
 
     const addSong = async (query) => {
         const song = await ytdl.getInfo(query);
+
+        song.subtitles = await getSubtitles(ytdl.getVideoID(query));
         song.user = message.member.user;
         song.duration = new Date(song.length_seconds * 1000).toISOString().substr(11, 8);
         musicData.queue.push(song);
