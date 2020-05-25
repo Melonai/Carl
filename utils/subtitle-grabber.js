@@ -25,8 +25,14 @@ function getBestSubtitle(subtitleList) {
 async function getSubtitle(videoID) {
     const subtitleList = await getSubtitleList(videoID);
     if (typeof subtitleList === 'undefined') return;
-    const languageCode = getBestSubtitle(subtitleList).lang_code;
-    const subtitlesResponse = await fetch(`http://youtube.com/api/timedtext?type=track&v=${videoID}&lang=${languageCode}`)
+    const bestSubtitle = getBestSubtitle(subtitleList)
+    const languageCode = bestSubtitle.lang_code;
+    const languageName = bestSubtitle.name;
+    let url = `http://youtube.com/api/timedtext?type=track&v=${videoID}&lang=${languageCode}`;
+    if (typeof languageName !== 'undefined') {
+        url += `&name=${languageName}`;
+    }
+    const subtitlesResponse = await fetch(url)
         .then(r => r.text());
     if (subtitlesResponse !== '') {
         return parser.parse(subtitlesResponse, {
