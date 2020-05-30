@@ -9,6 +9,5 @@ module.exports = new Command({
 });
 
 async function main(command, message) {
-    await command.client.send('Good night! ^^', message.channel);
-    message.client.destroy();
+    command.client.send('Good night! ^^', message.channel).then(() => message.client.destroy());
 }
