@@ -16,7 +16,7 @@ module.exports = new Command({
 async function main(command, message, query) {
     const musicData = message.guild.data.music;
 
-    const nextSubtitle = async (index) => {
+    const nextSubtitle = (index) => {
         const currentSong = musicData.queue[0];
         if (index < currentSong.subtitles.length) {
             return setTimeout(() => {
@@ -53,11 +53,13 @@ async function main(command, message, query) {
                     .setColor('#0069ff');
 
                 if (typeof song.subtitles !== 'undefined') {
-                    musicData.subtitleTimeout = nextSubtitle(0);
                     embed.setFooter('♪ Subtitles are available for this song!');
                 }
-
                 await command.client.send(embed, message.channel);
+            }
+            if (typeof song.subtitles !== 'undefined') {
+                clearImmediate(musicData.subtitleTimeout);
+                musicData.subtitleTimeout = nextSubtitle(0);
             }
         } else {
             if (musicData.connection) {
