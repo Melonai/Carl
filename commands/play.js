@@ -26,20 +26,24 @@ async function main(command, message, query) {
         }
     }
 
-    const nextSong = async () => {
+    const playSong = async (song) => {
+        const dispatcher = musicData.connection
+            .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
+            .on('finish', () => {
+                if (!musicData.loop) {
+                    musicData.queue.shift();
+                }
+                nextSong();
+            })
+            .on('error', r => command.client.logger.error(r.message));
+        dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+    }
+
+    const nextSong = () => {
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
 
-            const dispatcher = musicData.connection
-                .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
-                .on('finish', () => {
-                    if (!musicData.loop) {
-                        musicData.queue.shift();
-                    }
-                    nextSong();
-                })
-                .on('error', r => command.client.logger.error(r.message));
-            dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+            playSong(song);
 
             if (!musicData.loop) {
                 const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
@@ -65,7 +69,7 @@ async function main(command, message, query) {
             if (musicData.connection) {
                 musicData.connection.disconnect();
                 musicData.connection = undefined;
-                await command.client.send('The queue has finished! Use play to play more songs.', message.channel);
+                command.client.send('The queue has finished! Use play to play more songs.', message.channel);
             }
         }
     };
@@ -99,9 +103,10 @@ async function main(command, message, query) {
     } else {
         await command.client.send(`Searching for: ${query}...`, message.channel);
         const result = await ytsr(query, {limit: 5});
-        for (let i = 0; i < result.items.length; i++) {
-            if (result.items[i].type === 'video') {
-                await addSong(result.items[i].link);
+
+        for (let item of result.items) {
+            if (item.type === 'video') {
+                await addSong(item.link);
                 break;
             }
         }
