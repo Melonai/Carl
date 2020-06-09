@@ -7,7 +7,6 @@
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
     "discord.js": "^12.1.1",
-    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.0",
     "pg": "^8.1.0",
     "prism-media": "^1.2.1",
@@ -19,7 +18,9 @@
   "engines": {
     "node": "12.x"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node bot.js"
