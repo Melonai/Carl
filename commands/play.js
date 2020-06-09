@@ -59,7 +59,8 @@ async function main(command, message, query) {
                 if (typeof song.subtitles !== 'undefined') {
                     embed.setFooter('♪ Subtitles are available for this song!');
                 }
-                await command.client.send(embed, message.channel);
+
+                command.client.send(embed, message.channel);
             }
             if (typeof song.subtitles !== 'undefined') {
                 clearImmediate(musicData.subtitleTimeout);
