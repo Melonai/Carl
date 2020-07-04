@@ -1,4 +1,5 @@
 const {Command, Discord} = require('../models/command.js');
+const getSubtitles = require('../utils/subtitle-grabber.js');
 const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
 const ytpl = require('ytpl');
@@ -15,9 +16,34 @@ module.exports = new Command({
 async function main(command, message, query) {
     const musicData = message.guild.data.music;
 
-    const nextSong = async () => {
+    const nextSubtitle = (subtitleIndex) => {
+        const currentSong = musicData.queue[0];
+        if (subtitleIndex < currentSong.subtitles.length) {
+            return setTimeout(() => {
+                musicData.subtitleTimeout = nextSubtitle(subtitleIndex + 1);
+                command.client.send(currentSong.subtitles[subtitleIndex].text, message.channel);
+            }, currentSong.subtitles[subtitleIndex].start * 1000 - musicData.connection.dispatcher.streamTime);
+        }
+    }
+
+    const playSong = async (song) => {
+        const dispatcher = musicData.connection
+            .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
+            .on('finish', () => {
+                if (!musicData.loop) {
+                    musicData.queue.shift();
+                }
+                nextSong();
+            })
+            .on('error', r => command.client.logger.error(r.message));
+        dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+    }
+
+    const nextSong = () => {
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
+
+            playSong(song);
 
             if (!musicData.loop) {
                 const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
@@ -26,34 +52,35 @@ async function main(command, message, query) {
                     .setTitle('Now Playing:')
                     .setDescription(song.title)
                     .setThumbnail(thumbnails[thumbnails.length - 1].url)
-                    .addField("Added By:", song.user.tag, true)
-                    .addField("Duration:", song.duration, true)
+                    .addField('Added By:', song.user.tag, true)
+                    .addField('Duration:', song.duration, true)
                     .setColor('#0069ff');
 
-                await command.client.send(embed, message.channel);
-            }
+                if (typeof song.subtitles !== 'undefined') {
+                    embed.setFooter('♪ Subtitles are available for this song!');
+                }
 
-            const dispatcher = musicData.connection
-                .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
-                .on('finish', () => {
-                    if (!musicData.loop) {
-                        musicData.queue.shift();
-                    }
-                    nextSong();
-                })
-                .on('error', r => command.client.logger.error(r.message));
-            dispatcher.setVolumeLogarithmic(musicData.volume / 7);
+                command.client.send(embed, message.channel);
+            }
+            if (typeof musicData.subtitleTimeout !== 'undefined') {
+                clearImmediate(musicData.subtitleTimeout);
+            }
+            if (typeof song.subtitles !== 'undefined') {
+                musicData.subtitleTimeout = nextSubtitle(0);
+            }
         } else {
             if (musicData.connection) {
                 musicData.connection.disconnect();
                 musicData.connection = undefined;
-                await command.client.send('The queue has finished! Use play to play more songs.', message.channel);
+                command.client.send('The queue has finished! Use play to play more songs.', message.channel);
             }
         }
     };
 
     const addSong = async (query) => {
         const song = await ytdl.getInfo(query);
+
+        song.subtitles = await getSubtitles(ytdl.getVideoID(query));
         song.user = message.member.user;
         song.duration = new Date(song.length_seconds * 1000).toISOString().substr(11, 8);
         musicData.queue.push(song);
@@ -79,9 +106,10 @@ async function main(command, message, query) {
     } else {
         await command.client.send(`Searching for: ${query}...`, message.channel);
         const result = await ytsr(query, {limit: 5});
-        for (let i = 0; i < result.items.length; i++) {
-            if (result.items[i].type === 'video') {
-                await addSong(result.items[i].link);
+
+        for (let item of result.items) {
+            if (item.type === 'video') {
+                await addSong(item.link);
                 break;
             }
         }
