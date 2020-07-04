@@ -16,13 +16,13 @@ module.exports = new Command({
 async function main(command, message, query) {
     const musicData = message.guild.data.music;
 
-    const nextSubtitle = (index) => {
+    const nextSubtitle = (subtitleIndex) => {
         const currentSong = musicData.queue[0];
-        if (index < currentSong.subtitles.length) {
+        if (subtitleIndex < currentSong.subtitles.length) {
             return setTimeout(() => {
-                musicData.subtitleTimeout = nextSubtitle(index + 1);
-                command.client.send(currentSong.subtitles[index].text, message.channel);
-            }, currentSong.subtitles[index].start * 1000 - musicData.connection.dispatcher.streamTime);
+                musicData.subtitleTimeout = nextSubtitle(subtitleIndex + 1);
+                command.client.send(currentSong.subtitles[subtitleIndex].text, message.channel);
+            }, currentSong.subtitles[subtitleIndex].start * 1000 - musicData.connection.dispatcher.streamTime);
         }
     }
 
@@ -62,8 +62,10 @@ async function main(command, message, query) {
 
                 command.client.send(embed, message.channel);
             }
-            if (typeof song.subtitles !== 'undefined') {
+            if (typeof musicData.subtitleTimeout !== 'undefined') {
                 clearImmediate(musicData.subtitleTimeout);
+            }
+            if (typeof song.subtitles !== 'undefined') {
                 musicData.subtitleTimeout = nextSubtitle(0);
             }
         } else {
