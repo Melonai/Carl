@@ -39,11 +39,15 @@ async function main(command, message, query) {
         dispatcher.setVolumeLogarithmic(musicData.volume / 7);
     }
 
-    const nextSong = () => {
+    const nextSong = async () => {
+        if (typeof musicData.subtitleTimeout !== 'undefined') {
+            clearImmediate(musicData.subtitleTimeout);
+        }
+
         if (musicData.queue.length !== 0) {
             const song = musicData.queue[0];
 
-            playSong(song);
+            await playSong(song);
 
             if (!musicData.loop) {
                 const thumbnails = song.player_response.videoDetails.thumbnail.thumbnails;
@@ -60,10 +64,7 @@ async function main(command, message, query) {
                     embed.setFooter('♪ Subtitles are available for this song!');
                 }
 
-                command.client.send(embed, message.channel);
-            }
-            if (typeof musicData.subtitleTimeout !== 'undefined') {
-                clearImmediate(musicData.subtitleTimeout);
+                await command.client.send(embed, message.channel);
             }
             if (typeof song.subtitles !== 'undefined') {
                 musicData.subtitleTimeout = nextSubtitle(0);
@@ -72,7 +73,7 @@ async function main(command, message, query) {
             if (musicData.connection) {
                 musicData.connection.disconnect();
                 musicData.connection = undefined;
-                command.client.send('The queue has finished! Use play to play more songs.', message.channel);
+                await command.client.send('The queue has finished! Use play to play more songs.', message.channel);
             }
         }
     };
