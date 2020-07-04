@@ -8,5 +8,8 @@ module.exports = new Command({
 });
 
 async function main(command, message) {
-    await command.client.send('Pong.', message.channel);
+    const arrived = Date.now();
+    message.channel.send(`Pong.\n\`• 📮 ${arrived - message.createdAt}ms\``).then(async reply => {
+        await reply.edit(reply.content + `\n\`• ↩️ ${Date.now() - arrived}ms\``)
+    });
 }

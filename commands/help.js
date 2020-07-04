@@ -17,7 +17,7 @@ async function main(command, message, cmd) {
         const embed = new Discord.MessageEmbed();
         embed.setTitle(title).setDescription(description);
         embed.addField('Usage', commandToCheck.getUsage());
-        embed.addField('Permission Level', commandToCheck.verify.name);
+        embed.addField('Permissions', command.userPermissions.join('/') || "None");
 
         await command.client.send(embed, message.channel);
     } else {

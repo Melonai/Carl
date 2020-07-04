@@ -1,5 +1,5 @@
 {
   "prefixes": ["carl ", "carl, ", "carl,", "+"],
   "trusted": ["136888023961829377"],
-  "banned_words": ["tranny", "fag", "faggot", "dyke", "nigger", "nigga", "queer", "vagina", "penis", "clitoris", "mers"]
+  "banned_words": ["tranny", "fag", "faggot", "dyke", "nigger", "nigga", "queer", "vagina", "penis", "clitoris", " mers "]
 }

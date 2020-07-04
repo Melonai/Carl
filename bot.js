@@ -10,7 +10,11 @@ const DatabaseManager = require('./managers/database_manager.js');
 const CommandManager = require('./managers/command_manager.js');
 const RuleManager = require('./managers/rule_manager.js');
 
-require('dotenv').config()
+try {
+    require('dotenv').config()
+} catch (e) {
+    // We're in production.
+}
 
 let token = process.env.TOKEN;
 
