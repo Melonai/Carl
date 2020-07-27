@@ -7,7 +7,7 @@ function loadEvents(bot) {
         if (message.author.bot) return;
         if (typeof message.guild !== 'undefined') {
             if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
-            if (message.guild.data.locks.contains(message.channel.id)) {
+            if (message.guild.data.locks.includes(message.channel.id)) {
                 message.delete();
                 return;
             }
