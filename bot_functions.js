@@ -8,7 +8,8 @@ function loadFunctions(bot) {
                 connection: null,
                 volume: 7,
                 loop: false
-            }
+            },
+            locks: []
         }
     };
 
@@ -21,7 +22,6 @@ function loadFunctions(bot) {
     };
 
     bot.command = (message, content) => {
-        if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
         const args = content.split(' ').filter(a => a);
         const cmd = args.shift().toLowerCase();
         const command = bot.commands.getCommand(cmd);
