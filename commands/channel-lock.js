@@ -10,7 +10,7 @@ module.exports = new Command({
 async function main(command, message) {
     const lockData = message.guild.data.locks;
     const channelID = message.channel.id;
-    if (!lockData.contains(message.channel.id)) {
+    if (!lockData.includes(message.channel.id)) {
         await command.client.send("The channel has now been unlocked", message.channel);
         lockData.push(channelID);
     }
