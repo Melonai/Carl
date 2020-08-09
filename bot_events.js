@@ -4,24 +4,31 @@ function loadEvents(bot) {
     });
 
     bot.on('message', message => {
-        if (message.author.bot) return;
+        const prefix = bot.config.prefixes.find(p => message.content.toLowerCase().startsWith(p));
+
+        if (typeof prefix !== 'undefined') {
+            if (bot.priorityCommand(message, message.content.substring(prefix.length))) {
+                return;
+            }
+        }
+
         if (typeof message.guild !== 'undefined') {
             if (typeof message.guild.data === 'undefined') {bot.guildDataInit(message.guild)}
-            if (message.guild.data.locks.includes(message.channel.id)) {
+            const guildData = message.guild.data;
+            if (guildData.channelLocks.includes(message.channel.id) || guildData.userLocks.includes(message.author.id)) {
                 message.delete();
                 return;
             }
         }
+
         let triggered = bot.rules.getRules().filter((rule) => rule.check(message));
         for (let rule of triggered) {
             rule.trigger(message);
             if (rule.blocksCommands()) return;
         }
-        for (let prefix of bot.config.prefixes) {
-            if (message.content.toLowerCase().startsWith(prefix)) {
-                bot.command(message, message.content.substring(prefix.length));
-                break;
-            }
+
+        if (typeof prefix !== 'undefined') {
+            bot.command(message, message.content.substring(prefix.length));
         }
     });
 }

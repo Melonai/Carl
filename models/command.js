@@ -90,6 +90,10 @@ class Command {
     isTrustedOnly() {
         return this.flags.includes('trusted');
     }
+
+    isPriority() {
+        return this.flags.includes('priority');
+    }
 }
 
 module.exports = {

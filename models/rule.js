@@ -23,7 +23,7 @@ class Rule {
     }
 
     check(message) {
-        return this.triggers.some(t => message.content.toLowerCase().includes(t)) || this.condition(message);
+        return !message.author.bot && (this.triggers.some(t => message.content.toLowerCase().includes(t)) || this.condition(message));
     }
 
     blocksCommands() {
