@@ -1,8 +1,6 @@
 const {Command, Discord} = require('../models/command.js');
 const getSubtitles = require('../utils/subtitle-grabber.js');
-const ytdlOpus = require('../utils/ytdl-opus.js');
 const ytdl = require('ytdl-core');
-const ytpl = require('ytpl');
 const ytsr = require('ytsr');
 
 module.exports = new Command({
@@ -27,8 +25,11 @@ async function main(command, message, query) {
     }
 
     const playSong = async (song) => {
+        // TO-DO: Re-enable Opus.
+        const stream = await ytdl(song.videoDetails.video_url, {highWaterMark: 1 << 23});
+
         const dispatcher = musicData.connection
-            .play(await ytdlOpus(song.video_url, {highWaterMark: 1 << 23}), {type: 'opus', highWaterMark: 50})
+            .play(stream, {highWaterMark: 50})
             .on('finish', () => {
                 if (!musicData.loop) {
                     musicData.queue.shift();
@@ -54,7 +55,7 @@ async function main(command, message, query) {
 
                 const embed = new Discord.MessageEmbed()
                     .setTitle('Now Playing:')
-                    .setDescription(song.title)
+                    .setDescription(song.videoDetails.title)
                     .setThumbnail(thumbnails[thumbnails.length - 1].url)
                     .addField('Added By:', song.user.tag, true)
                     .addField('Duration:', song.duration, true)
@@ -83,12 +84,12 @@ async function main(command, message, query) {
 
         song.subtitles = await getSubtitles(ytdl.getVideoID(query));
         song.user = message.member.user;
-        song.duration = new Date(song.length_seconds * 1000).toISOString().substr(11, 8);
+        song.duration = new Date(song.player_response.videoDetails.lengthSeconds * 1000).toISOString().substr(11, 8);
         musicData.queue.push(song);
 
         const embed = new Discord.MessageEmbed()
             .setTitle('Added to queue:')
-            .setDescription(song.title)
+            .setDescription(song.videoDetails.title)
             .addField("Duration:", song.duration)
             .addField("Position in queue:", musicData.queue.length - 1)
             .setAuthor(song.user.tag, song.user.displayAvatarURL())
@@ -97,20 +98,16 @@ async function main(command, message, query) {
         await command.client.send(embed, message.channel);
     };
 
+    // TO-DO: Re-add ytpl.
     if (ytdl.validateURL(query)) {
         await addSong(query);
-    } else if (ytpl.validateURL(query)) {
-        const playlist = await ytpl(query);
-        playlist.items.forEach((video) => {
-            addSong(video.url);
-        });
     } else {
         await command.client.send(`Searching for: ${query}...`, message.channel);
         const result = await ytsr(query, {limit: 5});
 
         for (let item of result.items) {
             if (item.type === 'video') {
-                await addSong(item.link);
+                await addSong(item.url);
                 break;
             }
         }
